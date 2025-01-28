@@ -6,7 +6,8 @@ Finally, the scripts in PseudoOptimise are used to optimise the distribution of 
 
 ## PseudoEmulator
 
-cd into this directory before running any of the following scripts.
+**cd into this directory before running this example**
+
 
 To generate a simple Latin hypercube (LHC) of input cosmological parameters:
 
@@ -42,6 +43,8 @@ In order to generate a trial set instead of a training set, the following variab
 
 ## PseudoOptimise
 
+**cd into this directory before running this example**
+
 This directory contains two scripts for optimising the distribution of 13D input cosmologies. It uses the 50node Latin hypercube training set, generated inside in the **PseudoEmulator** directory following the instructions above as a starting point. It then adds nodes to this distribution according to two criteria:
 
  - **exploration:** where is the error from the emulator largest?
@@ -62,10 +65,28 @@ The functions & classes used in the optimisation can be found in optimisation.py
  - All of the variables defined in **PseudoEmulator** scripts mentioned above are repeated here. If you have changed any of those variables to, e.g., generate an initial training set with more nodes, you need to alter the variables in this script (Pseudo_Nodes_Optimise.py) as well.
  - The initial and final number of nodes used in the optimisation are defined by **Nodes_ini** and **Nodes_fin**. Note that **if you have just downloaded this repo, Nodes_fin is set to add just 2 nodes to the initial LHC** - this is a small number to test that the optimisation is working correctly for you. You should increase this; we have been working at adding 150 nodes to the initial 50, hence Nodes_fin=200.
  - **std_dev:** ~[0,1]. If finite, Gaussian random displacements are added to each optimised node, sampled from a normal distrn with this width. If None, no random displacement is added.
- - **nu:** This is a hyperparameter which weights the exploitation term; 0.19 is the default having been used in [Rogers et al. 2018][3]. A value of 1.0 means exploit & explor have equal weighting. 
+ - **nu:** This is a hyperparameter which weights the exploitation term; 0.19 is the default having been used in [Rogers et al. 2018][3]. A value of 1.0 means exploit & explor have equal weighting.
+
+
+## GPR_Emulator
+
+**cd into this directory before running this example**
+
+If you are interested in seeing the emulation performance for a given training and trial set, you can do that in this directory. The general syntax is as follows:
+
+**python GPR_Emulator_Tool.py param_files/params_NLCDM_50nodes.dat**
+
+This emulator is pretty much identical to the one on my public [Github repo][4], and the README therein explains what the variable inside this input parameter file do.
+
+In order for this example to work, you must first generate the 50 node training set by running the **PseudoEmulator** codes, following the instructions above. You will then need to generate a 200 node **trial set**, again following the above instructions to edit those codes.
+
+The emulator will train on the 50 node training set and then make predictions for the 200 trial cosmologies which will be compared to the truth predictions made by Generate_Predictions.sh (via CAMB). The output will be saved in: ../PseudoEmulator/Emulator_Predictions/
+
+
 
 
 
 [1]: https://camb.readthedocs.io/en/latest/
 [2]: https://arxiv.org/abs/1906.02742
 [3]: https://arxiv.org/abs/1812.04631
+[4]: https://github.com/benjamingiblin/GPR_Emulator

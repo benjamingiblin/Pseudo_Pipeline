@@ -69,6 +69,9 @@ TrialNodesFile = /home/btrotter/PseudoEmulator/Trial_Set/Nodes/Seed2Mx1.0_CPFina
 						# Nodes of trail cosmologies: assumes each row a different node.
 
 TrialNodeCols = 
+
+savedirectory = ../PseudoEmulator/Emulator_Predictions/
+
 # --------------------------------------------------------------------- TRIAL SET ------------------------------------------------------------------------------
 
 
