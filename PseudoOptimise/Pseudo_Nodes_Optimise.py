@@ -20,7 +20,7 @@ Basis = "Mixed"               # The random curves used to define the basis funct
 Seed = 1                      # Random seed used to generate the initial LHC
 
 Nodes_ini = 50                # Number nodes in initial LHC
-Nodes_fin = 200
+Nodes_fin = 52
 
 cosmol_dim = 5
 weight_dim = 8
@@ -59,13 +59,6 @@ if "Ultimate" in Data:
 Priors = np.vstack(( Cosmol_Priors, Weight_Priors ))
 param_limits = np.array([Priors[i] for i in range(len(Priors))])
 
-# The un-scaled (i.e. raw value) initial LHC
-lhc_ini = np.loadtxt('%s/Nodes/%s_Nodes%s_Dim%s.dat'%(pseudo_DIR,TAG,Nodes_ini,dimensions))
-# Can confirm these two things - converting the LHC to unitary values - give same answer
-# modulo some rounding which was done in saving the LHC. So 2nd approach (Keir's func) is preferred.
-#lhc_ini_unit = np.loadtxt('%s/Nodes/Seed%sMx1.0_Nodes%s_Dim%s.dat'%(pseudo_DIR,Seed,Nodes_ini,dimensions))
-lhc_ini_unit = map_to_unit_cube_list(lhc_ini, Priors)
-
 import pickle
 import glob
 if Basis == "GPCurves" or Basis == "Mixed":
@@ -99,8 +92,9 @@ paramfile = '../GPR_Emulator/param_files/params_NLCDM_50nodes.dat'
 GI = Get_Input(paramfile)
 NumNodes = GI.NumNodes()
 Train_x, Train_Pred, Train_ErrPred, Train_Nodes = GI.Load_Training_Set()
-Train_Nodes = map_to_unit_cube_list(Train_Nodes, Priors) # unitise the (raw) Train_Nodes;
-                                                         # this makes them identical to lhc_ini_unit (dont need both?)
+#Train_Nodes = map_to_unit_cube_list(Train_Nodes, Priors) # Train_Nodes already in [0,1] range; dont need to convert them.
+
+
 #Train_Pred = np.log(Train_Pred)
 Perform_PCA = GI.Perform_PCA()
 n_restarts_optimizer = GI.n_restarts_optimizer()
@@ -198,7 +192,7 @@ while i < opt_steps:
     optimiser = OptimisationClass(get_objective = None, get_emulator_error = get_emulator_error,
                                   param_limits = param_limits, inverse_data_covariance = inv_cov, mvn = mvn)
     
-    # make proposal
+    # make proposal (returned node is in raw units, NOT [0,1] range, as required).
     node_proposal, disp[count], expl[count,0], expl[count,1] = optimiser.make_proposal(std_dev = std_dev, nu = nu)
     print("opt %s --- exploit: %s, explor: %s" %(count,expl[count,0], expl[count,1]))
 
