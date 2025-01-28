@@ -29,7 +29,7 @@ You can then generate the log-boost-factors (log of the NL-pseudo-P(k) to Lin-ps
 This will make a plot of the linear and non-lin pseudo-P(k), plus the log boost factors, and save the boost factors in ./Training_Set/Predictions
 
 
-### Editing the code
+### Editing the PseudoEmulator codes
 
 In order to generate a trial set instead of a training set, the following variables should be changed in **LHC.py**, **Generate_Predictions.sh**, and **Plot_Predictions.py**:
 
@@ -40,7 +40,29 @@ In order to generate a trial set instead of a training set, the following variab
  - **Nodes:** 'Nodes=50' --> 'Nodes=X' (where X>50). This is arbitrary; typically I use 200 nodes for a trial set. One can also generate larger training sets imply by changing the Nodes variable and leaving all other variables mentioned here set to the training set values.
 
 
+## PseudoOptimise
 
+This directory contains two scripts for optimising the distribution of 13D input cosmologies. It uses the 50node Latin hypercube training set, generated inside in the **PseudoEmulator** directory following the instructions above as a starting point. It then adds nodes to this distribution according to two criteria:
+
+ - **exploration:** where is the error from the emulator largest?
+ - **exploitation:** a Gaussian shaped prior centred on the middle of the 13D param space, prioritising this volume.
+
+After each node is added, the emulator is retrained. For more information, see [Rogers et al. 2018][3].
+
+To run the optimisation, simply execute:
+
+**python Pseudo_Nodes_Optimise.py**
+
+The outputs are saved in, e.g.,: ../PseudoEmulator/Training_Set/Optimisation/Seed1Mx1.0_CPFinal_BFMixed-DataUltimate/nu0.19_stdevNone/
+
+The functions & classes used in the optimisation can be found in optimisation.py. This is where one should turn if you want to modify the definition or exploitation, exploration, their sum (acquisition), or which optimiser routine is employed.
+
+### Editing the PseudoOptimise codes
+
+ - All of the variables defined in **PseudoEmulator** scripts mentioned above are repeated here. If you have changed any of those variables to, e.g., generate an initial training set with more nodes, you need to alter the variables in this script (Pseudo_Nodes_Optimise.py) as well.
+ - The initial and final number of nodes used in the optimisation are defined by **Nodes_ini** and **Nodes_fin**. Note that **if you have just downloaded this repo, Nodes_fin is set to add just 2 nodes to the initial LHC** - this is a small number to test that the optimisation is working correctly for you. You should increase this; we have been working at adding 150 nodes to the initial 50, hence Nodes_fin=200.
+ - **std_dev:** ~[0,1]. If finite, Gaussian random displacements are added to each optimised node, sampled from a normal distrn with this width. If None, no random displacement is added.
+ - **nu:** This is a hyperparameter which weights the exploitation term; 0.19 is the default having been used in [Rogers et al. 2018][3]. A value of 1.0 means exploit & explor have equal weighting. 
 
 
 
