@@ -3,6 +3,7 @@
 # LHC has to satisfy condition shapes stay +ve: so generate 2*required number and pick those
 # that satisy this condition
 
+import os
 import numpy as np
 from pyDOE import lhs
 import time
@@ -296,8 +297,6 @@ else:
 	print( "Time to make the LHC with Optimise_ED set to %s and %s EDs is %s s" %(Optimise_ED,len(EDs),(t2-t1)) )
 
 
-
-
 # Assemble fmt string - NEED TO HAVE A_s COLUMN IN SCIENTIFIC FORMAT
 FMT=''
 for i in range(dimensions):
@@ -305,6 +304,11 @@ for i in range(dimensions):
 		FMT += '%.7e '
 	else:
 		FMT += '%.7f '
+
+if not os.path.exists(overall_DIR + '/Nodes'):
+        os.makedirs(directory + '/Nodes')
+        os.makedirs(directory + '/Shapes')
+        os.makedirs(directory + '/Predictions')
 
 # Save the LHCs & Shapes
 np.savetxt('%s/Nodes/Seed%sMx%s_Nodes%s_Dim%s.dat'%(overall_DIR,Seed,Mx,Nodes_Label,dimensions),
